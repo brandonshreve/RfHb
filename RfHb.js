@@ -10,7 +10,9 @@ var promptSchema = {
         'source directory': {
             message: 'Specify a source directory for your video files. Leave blank to use current directory'
         },
-
+        'output directory': {
+            message: 'Specify an output directory for the transcoded files. Leave blank to use source directory'
+        }
     }
 };
 var handbrakeData = {};
@@ -23,13 +25,21 @@ prompt.get(promptSchema, function (err, result) {
     }
     (result['preset'] === '') ? handbrakeData['preset'] = 'Fast 1080p30' : handbrakeData['preset'] = result['preset'];
     (result['source directory'] === '') ? handbrakeData['source directory'] = __dirname : handbrakeData['source directory'] = result['source directory'];
+    (result['output directory'] === '') ? handbrakeData['output directory'] = handbrakeData['source directory'] : handbrakeData['output directory'] = result['output directory'];
 
     find.file(handbrakeData['source directory'], function(files) {
         console.log(JSON.stringify(files.length) + " files found in directory");
 
         for(var i = 0; i < files.length; i++) {
             var sourceFilePath = files[i];
-            var destFilePath = sourceFilePath.substring(0, sourceFilePath.lastIndexOf('.')) + '.mp4';
+            var destFilePath = undefined;
+
+            if (handbrakeData['source directory'] === handbrakeData['output directory']) {
+                destFilePath = sourceFilePath.substring(0, sourceFilePath.lastIndexOf('.')) + '.mp4';
+            }
+            else {
+                destFilePath = sourceFilePath.replace(handbrakeData['source directory'], handbrakeData['output directory']);
+            }
             var handBrakeCmd = 'HandBrakeCLI -i ' + sourceFilePath + ' -o ' + destFilePath + ' --preset="' + handbrakeData['preset'] + '"';
 
             exec(handBrakeCmd, function(error, stdout, stderr) {
