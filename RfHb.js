@@ -29,9 +29,9 @@ prompt.get(promptSchema, function (err, result) {
 
         for(var i = 0; i < files.length; i++) {
             var sourceFilePath = files[i];
-            var destFilePath = sourceFilePath.substring(0, sourceFilePath.indexOf('.mkv')) + '.mp4';
+            var destFilePath = sourceFilePath.substring(0, sourceFilePath.lastIndexOf('.')) + '.mp4';
             var handBrakeCmd = 'HandBrakeCLI -i ' + sourceFilePath + ' -o ' + destFilePath + ' --preset="' + handbrakeData['preset'] + '"';
-            
+
             exec(handBrakeCmd, function(error, stdout, stderr) {
                 // command output is in stdout
                 console.log("Did something happen?", error);
