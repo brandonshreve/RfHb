@@ -1,0 +1,1 @@
+Requires HandBrake and HandBrakeCLI to be installed
