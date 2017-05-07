@@ -33,8 +33,12 @@ prompt.get(promptSchema, function (err, result) {
             var handBrakeCmd = 'HandBrakeCLI -i ' + sourceFilePath + ' -o ' + destFilePath + ' --preset="' + handbrakeData['preset'] + '"';
 
             exec(handBrakeCmd, function(error, stdout, stderr) {
-                // command output is in stdout
-                console.log("Did something happen?", error);
+                if(error) {
+                    console.error(`exec error: ${error}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+                console.log(`stderr: ${stderr}`);
             });
         }
 
