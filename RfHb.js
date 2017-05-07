@@ -1,6 +1,6 @@
 var prompt = require('prompt');
 var find = require('find');
-var exec = require('child_process').exec;
+var execSync = require('child_process').execSync;
 
 var promptSchema = {
     properties: {
@@ -38,14 +38,21 @@ prompt.get(promptSchema, function (err, result) {
                 destFilePath = sourceFilePath.substring(0, sourceFilePath.lastIndexOf('.')) + '.mp4';
             }
             else {
-                destFilePath = sourceFilePath.replace(handbrakeData['source directory'], handbrakeData['output directory']);
+                var parseString = sourceFilePath.replace(handbrakeData['source directory'], handbrakeData['output directory']); 
+                destFilePath = parseString.substring(0, parseString.lastIndexOf('.')) + '.mp4';
             }
+            // Sanitize input
+            // sourceFilePath = sourceFilePath.replace(' ', '^ ');
+            // destFilePath = destFilePath.replace(' ', '^ ');
+
             var handBrakeCmd = 'HandBrakeCLI -i ' + sourceFilePath + ' -o ' + destFilePath + ' --preset="' + handbrakeData['preset'] + '"';
 
-            exec(handBrakeCmd, function(error, stdout, stderr) {
+            console.log(handBrakeCmd);
+
+            execSync(handBrakeCmd, function(error, stdout, stderr) {
                 if(error) {
                     console.error(`exec error: ${error}`);
-                    return;
+                    return 1;
                 }
                 console.log(`stdout: ${stdout}`);
                 console.log(`stderr: ${stderr}`);
